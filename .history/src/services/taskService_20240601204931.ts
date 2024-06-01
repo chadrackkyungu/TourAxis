@@ -22,12 +22,11 @@ export const updateTaskService = async (userId: string, taskId: string, taskDeta
         throw new Error('User not found');
     }
 
-    const task = await taskModel.findOneAndUpdate({ _id: taskId, user: userId }, taskDetails, { new: true });
-    if (!task) {
-        throw new Error('Task not found for this user');
+    const updatedTask = await taskModel.findByIdAndUpdate(taskId, taskDetails, { new: true });
+    if (!updatedTask) {
+        throw new Error('Task not found');
     }
-
-    return task;
+    return updatedTask;
 };
 
 //******************************** Delete task ********************************
@@ -37,9 +36,9 @@ export const deleteTaskService = async (userId: string, taskId: string) => {
         throw new Error('User not found');
     }
 
-    const task = await taskModel.findOneAndDelete({ _id: taskId, user: userId });
+    const task = await taskModel.findByIdAndDelete(taskId);
     if (!task) {
-        throw new Error('Task not found for this user');
+        throw new Error('Task not found');
     }
 
     return task;
@@ -51,13 +50,10 @@ export const getTaskService = async (userId: string, taskId: string) => {
     if (!user) {
         throw new Error('User not found');
     }
-
-    const task = await taskModel.findOne({ _id: taskId, user: userId });
-
+    const task = await taskModel.findById(taskId);
     if (!task) {
-        throw new Error('Task not found for this user');
+        throw new Error('Task not found');
     }
-
     return task;
 };
 

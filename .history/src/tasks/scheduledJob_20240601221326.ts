@@ -1,4 +1,5 @@
 import cron from 'node-cron';
+import { formatISO, parseISO } from 'date-fns';
 import taskModel from '../models/taskModel';
 
 // Schedule job to run every minute
@@ -11,9 +12,13 @@ cron.schedule('* * * * *', async () => {
         const formattedDateStr = isoString.split('.')[0];
         const formattedDate = new Date(formattedDateStr);
 
+        console.log(" res : ", formattedDateStr)
+
+        console.log("Cron job running at:", formattedDate.toISOString());
+
         const pendingTasks = await taskModel.find({
             status: 'pending',
-            next_execute_date_time: { $lt: `${formattedDate}.000+00:00` }
+            next_execute_date_time: { $lt: formattedDate }
         });
 
         if (pendingTasks.length === 0) {

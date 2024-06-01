@@ -1,19 +1,19 @@
 import cron from 'node-cron';
+import { formatISO, parseISO } from 'date-fns';
 import taskModel from '../models/taskModel';
 
 // Schedule job to run every minute
 cron.schedule('* * * * *', async () => {
     try {
-
+        // Get the current date and time in UTC
         const currentDate = new Date();
-        // Extract the date part before the dot
-        const isoString = currentDate.toISOString();
-        const formattedDateStr = isoString.split('.')[0];
-        const formattedDate = new Date(formattedDateStr);
+        const utcCurrentDate = new Date(currentDate.toISOString());
+        console.log("Cron job running at:", utcCurrentDate.toISOString());
 
+        // Find tasks where next_execute_date_time is less than the current UTC date and time
         const pendingTasks = await taskModel.find({
             status: 'pending',
-            next_execute_date_time: { $lt: `${formattedDate}.000+00:00` }
+            next_execute_date_time: { $lt: utcCurrentDate }
         });
 
         if (pendingTasks.length === 0) {

@@ -22,12 +22,11 @@ export const updateTaskService = async (userId: string, taskId: string, taskDeta
         throw new Error('User not found');
     }
 
-    const task = await taskModel.findOneAndUpdate({ _id: taskId, user: userId }, taskDetails, { new: true });
-    if (!task) {
-        throw new Error('Task not found for this user');
+    const updatedTask = await taskModel.findByIdAndUpdate(taskId, taskDetails, { new: true });
+    if (!updatedTask) {
+        throw new Error('Task not found');
     }
-
-    return task;
+    return updatedTask;
 };
 
 //******************************** Delete task ********************************
